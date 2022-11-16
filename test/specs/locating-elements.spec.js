@@ -12,7 +12,7 @@ describe("locating elements", () => {
     await webdriverioButtom.click();
     browser.pause(3000);
   });
-  it.only("$$ - locate elements", async () => {
+  it("$$ - locate elements", async () => {
 
     const expectedTitles = ["#", "First", "Last", "Handle", "1", "2", "3", "Firstname", "Lastname", "Age"]
     const actualTitles = [];

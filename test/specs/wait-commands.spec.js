@@ -27,7 +27,7 @@ describe("wait commands - examples", () => {
     const clickMe_Button = await $("#button1");
     await clickMe_Button.waitForExist();
   });
-  it.only("wait until", async () => {
+  it("wait until", async () => {
     await browser.url("/Accordion/index.html");
     const loadingStatus_UI = await $("#text-appear-box");
     await loadingStatus_UI.waitUntil(async function() {
