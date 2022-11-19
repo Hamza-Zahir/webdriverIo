@@ -1,5 +1,0 @@
-{
-  "error": "no such element",
-  "message": "no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":\"//span[text()=\"Flat Shipping Rate:\"]/../following-sibling::td\"}\n  (Session info: chrome=107.0.5304.107)",
-  "stacktrace": "Backtrace:\n\tOrdinal0 [0x0032ACD3+2075859]\n\tOrdinal0 [0x002BEE61+1633889]\n\tOrdinal0 [0x001BB7BD+571325]\n\tOrdinal0 [0x001EAC2F+764975]\n\tOrdinal0 [0x001EAE1B+765467]\n\tOrdinal0 [0x0021D0F2+970994]\n\tOrdinal0 [0x00207364+881508]\n\tOrdinal0 [0x0021B56A+963946]\n\tOrdinal0 [0x00207136+880950]\n\tOrdinal0 [0x001DFEFD+720637]\n\tOrdinal0 [0x001E0F3F+724799]\n\tGetHandleVerifier [0x005DEED2+2769538]\n\tGetHandleVerifier [0x005D0D95+2711877]\n\tGetHandleVerifier [0x003BA03A+521194]\n\tGetHandleVerifier [0x003B8DA0+516432]\n\tOrdinal0 [0x002C682C+1665068]\n\tOrdinal0 [0x002CB128+1683752]\n\tOrdinal0 [0x002CB215+1683989]\n\tOrdinal0 [0x002D6484+1729668]\n\tBaseThreadInitThunk [0x76477BA9+25]\n\tRtlInitializeExceptionChain [0x77A5BB9B+107]\n\tRtlClearBits [0x77A5BB1F+191]\n"
-}

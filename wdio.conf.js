@@ -1,5 +1,7 @@
 const allure = require("allure-commandline");
 import fs from "fs";
+const commands = require("./utils/commands.js");
+
 exports.config = {
   //
   // ====================
@@ -22,20 +24,21 @@ exports.config = {
   // then the current working directory is where your `package.json` resides, so `wdio`
   // will be called from there.
   //
-  specs: [
-    // './test/specs/**/*.spec.js'
-    // './test/specs/mocha-example.js'
-    // './test/specs/locating-elements.spec.js'
-    // "./test/specs/**/contact-us.spec.js",
-    // './test/specs/wait-commands.spec.js'
-    // './test/specs/advanced-element-interactions.spec.js'
-    './test/specs/add-items-to-basket.spec.js'
-  
-  ],
+  specs: ["./test/specs/webdriver-university/*.spec.js"],
   // Patterns to exclude.
   exclude: [
-    // 'path/to/excluded/files'
+    //'./test/specs/**/contact-us.spec.js'
   ],
+  suites: {
+    smoke: [
+      "test/specs/automation-test-store/add-items-to-basket.spec.js",
+      "test/specs/webdriver-university/locating-elements.spec.js",
+      "test/specs/webdriver-university/contact-us.spec.js",
+    ],
+    automationteststore: [
+      "test/specs/automation-test-store/add-items-to-basket.spec.js",
+    ],
+  },
   //
   // ============
   // Capabilities
@@ -63,14 +66,35 @@ exports.config = {
       // maxInstances can get overwritten per capability. So if you have an in-house Selenium
       // grid with only 5 firefox instances available you can make sure that not more than
       // 5 instances get started at a time.
-      maxInstances: 5,
+      maxInstances: 2,
       //
       browserName: "chrome",
       acceptInsecureCerts: true,
+      // "goog:chromeOptions": {
+      //     args: [
+      //         "--incognito"
+      //     ],
+      // },
+      // timeouts: {
+      //     "pageLoad": 30000
+      // }
+
       // If outputDir is provided WebdriverIO can capture driver session logs
       // it is possible to configure which logTypes to include/exclude.
       // excludeDriverLogs: ['*'], // pass '*' to exclude all driver session logs
       // excludeDriverLogs: ['bugreport', 'server'],
+    },
+    {
+      maxInstances: 2,
+      browserName: "firefox",
+      // "moz:firefoxOptions": {
+      //     args: [
+      //         "-private"
+      //     ],
+      // },
+      // timeouts: {
+      //     "pageLoad": 30000
+      // }
     },
   ],
   //
@@ -104,8 +128,7 @@ exports.config = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: "https://webdriveruniversity.com",
-
+  baseUrl: "https://www.webdriveruniversity.com",
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -121,7 +144,8 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ["chromedriver"],
+  services: ["chromedriver", "geckodriver"],
+  // services: ['selenium-standalone'],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -132,7 +156,7 @@ exports.config = {
   framework: "mocha",
   //
   // The number of times to retry the entire specfile when it fails as a whole
-  // specFileRetries: 1,
+  specFileRetries: 0,
   //
   // Delay in seconds between the spec file retry attempts
   // specFileRetriesDelay: 0,
@@ -154,13 +178,12 @@ exports.config = {
       },
     ],
   ],
-
   //
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
     ui: "bdd",
-    timeout: 60000,
+    timeout: 600000,
   },
   //
   // =====
@@ -176,8 +199,8 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    */
   onPrepare: function (config, capabilities) {
-    if(fs.existsSync("./allure-results")) {
-        fs.rmSync("./allure-results", {recursive: true});
+    if (fs.existsSync("./allure-results")) {
+      fs.rmSync("./allure-results", { recursive: true });
     }
   },
   /**
@@ -218,18 +241,18 @@ exports.config = {
    * @param {Object}         browser      instance of created browser/device session
    */
   before: function (capabilities, specs) {
-    require("expect-webdriverio").setOptions({
-      wait: 10000, // ms to wait for expectation to succeed
-      interval: 500, // interval between attempts
-    });
+    require("expect-webdriverio").setOptions({ wait: 10000, interval: 500 });
   },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {String} commandName hook command name
    * @param {Array} args arguments that command would receive
    */
-  // beforeCommand: function (commandName, args) {
-  // },
+  beforeCommand: function (commandName, args) {
+    Object.keys(commands).forEach((key) => {
+      browser.addCommand(key, commands[key]);
+    });
+  },
   /**
    * Hook that gets executed before the suite starts
    * @param {Object} suite suite details
@@ -239,8 +262,9 @@ exports.config = {
   /**
    * Function to be executed before a test (in Mocha/Jasmine) starts.
    */
-  // beforeTest: function (test, context) {
-  // },
+  beforeTest: async function (test, context) {
+    await browser.maximizeWindow();
+  },
   /**
    * Hook that gets executed _before_ a hook within the suite starts (e.g. runs before calling
    * beforeEach in Mocha)
@@ -317,7 +341,7 @@ exports.config = {
     const reportError = new Error("Could not generate Allure report");
     const generation = allure(["generate", "allure-results", "--clean"]);
     return new Promise((resolve, reject) => {
-      const generationTimeout = setTimeout(() => reject(reportError), 5000);
+      const generationTimeout = setTimeout(() => reject(reportError), 30000);
 
       generation.on("exit", function (exitCode) {
         clearTimeout(generationTimeout);
